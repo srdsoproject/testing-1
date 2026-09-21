@@ -24,205 +24,349 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ====================== CUSTOM CSS - RAILWAY GAMING THEME + DIAGONAL TRAIN ======================
-st.markdown("""
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap');
+# ====================== THEME STATE ======================
+if "theme" not in st.session_state:
+    st.session_state.theme = "Light"   # Default to Light as requested
 
-/* ========== GLOBAL ========== */
-.stApp {
-    background: linear-gradient(135deg, #0a0f1c 0%, #0d1b2a 40%, #1b263b 100%);
-    color: #e0e6ed;
-    font-family: 'Rajdhani', sans-serif;
-}
+# ====================== THEME CSS ======================
+def get_theme_css(theme: str) -> str:
+    if theme == "Dark":
+        return """
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap');
 
-/* ========== HEADER TITLE ========== */
-.dashboard-title {
-    font-family: 'Orbitron', sans-serif !important;
-    font-size: 2.9rem !important;
-    font-weight: 900 !important;
-    background: linear-gradient(90deg, #FF9933, #FFD700, #FF9933);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-align: center;
-    letter-spacing: 3px;
-    text-shadow: 0 0 20px rgba(255, 153, 51, 0.4);
-    margin-bottom: 0.1rem;
-    animation: glow 2.5s ease-in-out infinite alternate;
-}
+        .stApp {
+            background: linear-gradient(135deg, #0a0f1c 0%, #0d1b2a 40%, #1b263b 100%);
+            color: #e0e6ed;
+            font-family: 'Rajdhani', sans-serif;
+        }
 
-@keyframes glow {
-    from { filter: drop-shadow(0 0 5px rgba(255,153,51,0.3)); }
-    to   { filter: drop-shadow(0 0 18px rgba(255,153,51,0.7)); }
-}
+        .dashboard-title {
+            font-family: 'Orbitron', sans-serif !important;
+            font-size: 2.9rem !important;
+            font-weight: 900 !important;
+            background: linear-gradient(90deg, #FF9933, #FFD700, #FF9933);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            letter-spacing: 3px;
+            text-shadow: 0 0 20px rgba(255, 153, 51, 0.4);
+            margin-bottom: 0.1rem;
+            animation: glow 2.5s ease-in-out infinite alternate;
+        }
 
-.subtitle {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 1.35rem;
-    color: #7ec8e3;
-    text-align: center;
-    font-weight: 600;
-    letter-spacing: 2px;
-    margin-top: -0.3rem;
-}
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 5px rgba(255,153,51,0.3)); }
+            to   { filter: drop-shadow(0 0 18px rgba(255,153,51,0.7)); }
+        }
 
-/* ========== SECTION HEADERS ========== */
-.section-header {
-    font-family: 'Orbitron', sans-serif !important;
-    font-size: 1.45rem !important;
-    font-weight: 700 !important;
-    color: #FF9933 !important;
-    margin: 1.4rem 0 0.6rem 0;
-    border-left: 5px solid #FF9933;
-    padding-left: 12px;
-    text-shadow: 0 0 10px rgba(255,153,51,0.3);
-}
+        .subtitle {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.35rem;
+            color: #7ec8e3;
+            text-align: center;
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin-top: -0.3rem;
+        }
 
-/* ========== METRIC CARDS ========== */
-div[data-testid="stMetric"] {
-    background: linear-gradient(145deg, #132f4c, #0d2137);
-    border: 1px solid #1e4a6e;
-    border-radius: 16px;
-    padding: 18px 12px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
-    transition: all 0.3s ease;
-}
+        .section-header {
+            font-family: 'Orbitron', sans-serif !important;
+            font-size: 1.45rem !important;
+            font-weight: 700 !important;
+            color: #FF9933 !important;
+            margin: 1.4rem 0 0.6rem 0;
+            border-left: 5px solid #FF9933;
+            padding-left: 12px;
+            text-shadow: 0 0 10px rgba(255,153,51,0.3);
+        }
 
-div[data-testid="stMetric"]:hover {
-    transform: translateY(-5px);
-    border-color: #FF9933;
-    box-shadow: 0 12px 30px rgba(255,153,51,0.25);
-}
+        div[data-testid="stMetric"] {
+            background: linear-gradient(145deg, #132f4c, #0d2137);
+            border: 1px solid #1e4a6e;
+            border-radius: 16px;
+            padding: 18px 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+            transition: all 0.3s ease;
+        }
 
-div[data-testid="stMetric"] label {
-    color: #7ec8e3 !important;
-    font-weight: 600 !important;
-    font-size: 0.95rem !important;
-}
+        div[data-testid="stMetric"]:hover {
+            transform: translateY(-5px);
+            border-color: #FF9933;
+            box-shadow: 0 12px 30px rgba(255,153,51,0.25);
+        }
 
-div[data-testid="stMetric"] div[data-testid="stMetricValue"] {
-    color: #FFD700 !important;
-    font-family: 'Orbitron', sans-serif !important;
-    font-size: 1.8rem !important;
-}
+        div[data-testid="stMetric"] label {
+            color: #7ec8e3 !important;
+            font-weight: 600 !important;
+            font-size: 0.95rem !important;
+        }
 
-/* ========== TABS ========== */
-.stTabs [data-baseweb="tab-list"] {
-    gap: 8px;
-    background: transparent;
-}
+        div[data-testid="stMetric"] div[data-testid="stMetricValue"] {
+            color: #FFD700 !important;
+            font-family: 'Orbitron', sans-serif !important;
+            font-size: 1.8rem !important;
+        }
 
-.stTabs [data-baseweb="tab"] {
-    background: #132f4c;
-    border-radius: 12px 12px 0 0;
-    color: #7ec8e3;
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 700;
-    font-size: 1.1rem;
-    border: 1px solid #1e4a6e;
-    padding: 10px 22px;
-}
+        .stTabs [data-baseweb="tab-list"] { gap: 8px; background: transparent; }
 
-.stTabs [aria-selected="true"] {
-    background: linear-gradient(90deg, #FF9933, #e67e22) !important;
-    color: #0a0f1c !important;
-    border-color: #FF9933 !important;
-    box-shadow: 0 0 20px rgba(255,153,51,0.4);
-}
+        .stTabs [data-baseweb="tab"] {
+            background: #132f4c;
+            border-radius: 12px 12px 0 0;
+            color: #7ec8e3;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border: 1px solid #1e4a6e;
+            padding: 10px 22px;
+        }
 
-/* ========== BUTTONS ========== */
-.stButton > button {
-    background: linear-gradient(90deg, #FF9933, #e67e22) !important;
-    color: #0a0f1c !important;
-    font-family: 'Orbitron', sans-serif !important;
-    font-weight: 700 !important;
-    border: none !important;
-    border-radius: 10px !important;
-    padding: 0.6rem 1.4rem !important;
-    transition: all 0.3s ease !important;
-    box-shadow: 0 4px 15px rgba(255,153,51,0.3);
-}
+        .stTabs [aria-selected="true"] {
+            background: linear-gradient(90deg, #FF9933, #e67e22) !important;
+            color: #0a0f1c !important;
+            border-color: #FF9933 !important;
+            box-shadow: 0 0 20px rgba(255,153,51,0.4);
+        }
 
-.stButton > button:hover {
-    transform: scale(1.04);
-    box-shadow: 0 6px 25px rgba(255,153,51,0.55) !important;
-}
+        .stButton > button {
+            background: linear-gradient(90deg, #FF9933, #e67e22) !important;
+            color: #0a0f1c !important;
+            font-family: 'Orbitron', sans-serif !important;
+            font-weight: 700 !important;
+            border: none !important;
+            border-radius: 10px !important;
+            padding: 0.6rem 1.4rem !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 15px rgba(255,153,51,0.3);
+        }
 
-/* ========== SIDEBAR ========== */
-section[data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #0a1628 0%, #0d2137 100%);
-    border-right: 1px solid #1e4a6e;
-}
+        .stButton > button:hover {
+            transform: scale(1.04);
+            box-shadow: 0 6px 25px rgba(255,153,51,0.55) !important;
+        }
 
-section[data-testid="stSidebar"] .stMarkdown h2 {
-    color: #FF9933 !important;
-    font-family: 'Orbitron', sans-serif;
-}
+        section[data-testid="stSidebar"] {
+            background: linear-gradient(180deg, #0a1628 0%, #0d2137 100%);
+            border-right: 1px solid #1e4a6e;
+        }
 
-/* ========== DATAFRAMES ========== */
-.stDataFrame {
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid #1e4a6e;
-}
+        section[data-testid="stSidebar"] .stMarkdown h2 {
+            color: #FF9933 !important;
+            font-family: 'Orbitron', sans-serif;
+        }
 
-/* ========== DIAGONAL REAL TRAIN BACKGROUND ========== */
-.train-bg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
-}
+        .stDataFrame {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #1e4a6e;
+        }
 
-.train-wrapper {
-    position: absolute;
-    bottom: -80px;
-    left: -450px;
-    animation: diagonalTrain 32s linear infinite;
-    opacity: 0.20;
-    transform: rotate(-11deg);
-}
+        .train-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
 
-.train-img {
-    height: 95px;
-    filter: drop-shadow(0 0 15px rgba(255, 153, 51, 0.45));
-}
+        .train-wrapper {
+            position: absolute;
+            bottom: -60px;
+            left: -400px;
+            animation: diagonalTrain 28s linear infinite;
+            opacity: 0.28;
+            transform: rotate(-11deg);
+        }
 
-@keyframes diagonalTrain {
-    0% {
-        transform: translate(0, 0) rotate(-11deg);
-    }
-    100% {
-        transform: translate(170vw, -120vh) rotate(-11deg);
-    }
-}
+        .train-img {
+            height: 110px;
+            filter: drop-shadow(0 0 18px rgba(255, 153, 51, 0.55));
+        }
 
-/* ========== SCROLLBAR ========== */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-::-webkit-scrollbar-track {
-    background: #0d2137;
-}
-::-webkit-scrollbar-thumb {
-    background: #FF9933;
-    border-radius: 10px;
-}
-::-webkit-scrollbar-thumb:hover {
-    background: #FFD700;
-}
+        @keyframes diagonalTrain {
+            0%   { transform: translate(0, 0) rotate(-11deg); }
+            100% { transform: translate(170vw, -120vh) rotate(-11deg); }
+        }
 
-/* ========== CAPTION ========== */
-.stCaption, .stMarkdown p {
-    color: #8ba3b5 !important;
-}
-</style>
-""", unsafe_allow_html=True)
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #0d2137; }
+        ::-webkit-scrollbar-thumb { background: #FF9933; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #FFD700; }
+
+        .stCaption, .stMarkdown p { color: #8ba3b5 !important; }
+        </style>
+        """
+    else:
+        # ========== LIGHT THEME (soft, high-visibility) ==========
+        return """
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap');
+
+        .stApp {
+            background: linear-gradient(135deg, #f8fafc 0%, #eef4f8 40%, #e8f0f5 100%);
+            color: #1e293b;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .dashboard-title {
+            font-family: 'Orbitron', sans-serif !important;
+            font-size: 2.9rem !important;
+            font-weight: 900 !important;
+            background: linear-gradient(90deg, #e67e22, #d35400, #e67e22);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            letter-spacing: 3px;
+            text-shadow: 0 0 12px rgba(230, 126, 34, 0.25);
+            margin-bottom: 0.1rem;
+            animation: glow 2.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 4px rgba(230,126,34,0.2)); }
+            to   { filter: drop-shadow(0 0 14px rgba(230,126,34,0.45)); }
+        }
+
+        .subtitle {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.35rem;
+            color: #0e7490;
+            text-align: center;
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin-top: -0.3rem;
+        }
+
+        .section-header {
+            font-family: 'Orbitron', sans-serif !important;
+            font-size: 1.45rem !important;
+            font-weight: 700 !important;
+            color: #c2410c !important;
+            margin: 1.4rem 0 0.6rem 0;
+            border-left: 5px solid #e67e22;
+            padding-left: 12px;
+        }
+
+        div[data-testid="stMetric"] {
+            background: linear-gradient(145deg, #ffffff, #f1f5f9);
+            border: 1px solid #cbd5e1;
+            border-radius: 16px;
+            padding: 18px 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
+            transition: all 0.3s ease;
+        }
+
+        div[data-testid="stMetric"]:hover {
+            transform: translateY(-4px);
+            border-color: #e67e22;
+            box-shadow: 0 10px 25px rgba(230,126,34,0.15);
+        }
+
+        div[data-testid="stMetric"] label {
+            color: #0e7490 !important;
+            font-weight: 600 !important;
+            font-size: 0.95rem !important;
+        }
+
+        div[data-testid="stMetric"] div[data-testid="stMetricValue"] {
+            color: #c2410c !important;
+            font-family: 'Orbitron', sans-serif !important;
+            font-size: 1.8rem !important;
+        }
+
+        .stTabs [data-baseweb="tab-list"] { gap: 8px; background: transparent; }
+
+        .stTabs [data-baseweb="tab"] {
+            background: #ffffff;
+            border-radius: 12px 12px 0 0;
+            color: #0e7490;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border: 1px solid #cbd5e1;
+            padding: 10px 22px;
+        }
+
+        .stTabs [aria-selected="true"] {
+            background: linear-gradient(90deg, #e67e22, #d35400) !important;
+            color: #ffffff !important;
+            border-color: #e67e22 !important;
+            box-shadow: 0 4px 15px rgba(230,126,34,0.3);
+        }
+
+        .stButton > button {
+            background: linear-gradient(90deg, #e67e22, #d35400) !important;
+            color: #ffffff !important;
+            font-family: 'Orbitron', sans-serif !important;
+            font-weight: 700 !important;
+            border: none !important;
+            border-radius: 10px !important;
+            padding: 0.6rem 1.4rem !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 12px rgba(230,126,34,0.25);
+        }
+
+        .stButton > button:hover {
+            transform: scale(1.04);
+            box-shadow: 0 6px 20px rgba(230,126,34,0.4) !important;
+        }
+
+        section[data-testid="stSidebar"] {
+            background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%);
+            border-right: 1px solid #cbd5e1;
+        }
+
+        section[data-testid="stSidebar"] .stMarkdown h2 {
+            color: #c2410c !important;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .stDataFrame {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #cbd5e1;
+        }
+
+        .train-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .train-wrapper {
+            position: absolute;
+            bottom: -50px;
+            left: -380px;
+            animation: diagonalTrain 30s linear infinite;
+            opacity: 0.18;
+            transform: rotate(-11deg);
+        }
+
+        .train-img {
+            height: 105px;
+            filter: drop-shadow(0 0 12px rgba(230, 126, 34, 0.35));
+        }
+
+        @keyframes diagonalTrain {
+            0%   { transform: translate(0, 0) rotate(-11deg); }
+            100% { transform: translate(170vw, -120vh) rotate(-11deg); }
+        }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #e2e8f0; }
+        ::-webkit-scrollbar-thumb { background: #e67e22; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #d35400; }
+
+        .stCaption, .stMarkdown p { color: #475569 !important; }
+        </style>
+        """
+
+# Apply the selected theme
+st.markdown(get_theme_css(st.session_state.theme), unsafe_allow_html=True)
 
 # ====================== CONFIG ======================
 IR_LOGO_URL = "https://raw.githubusercontent.com/srdsoproject/testing/main/Central%20Railway%20Logo.png"
@@ -711,11 +855,17 @@ def refresh_data():
 if not st.session_state.logged_in:
     login_page()
 else:
-    # Diagonal Real Train Background
-    st.markdown("""
+    # Diagonal Train Background (reliable SVG data-URI – never 404)
+    train_svg = """
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" width="140" height="90">
+      <path fill="#e67e22" d="M96 0C43 0 0 43 0 96V352c0 35.3 28.7 64 64 64h32v32c0 17.7 14.3 32 32 32h32c17.7 0 32-14.3 32-32V416h256v32c0 17.7 14.3 32 32 32h32c17.7 0 32-14.3 32-32V416h32c35.3 0 64-28.7 64-64V96c0-53-43-96-96-96H96zM64 128c0-17.7 14.3-32 32-32H288c17.7 0 32 14.3 32 32v96c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V128zm320 0c0-17.7 14.3-32 32-32H544c17.7 0 32 14.3 32 32v96c0 17.7-14.3 32-32 32H416c-17.7 0-32-14.3-32-32V128zM80 352a48 48 0 1 1 96 0 48 48 0 1 1-96 0zm368-48a48 48 0 1 1 0 96 48 48 0 1 1 0-96z"/>
+    </svg>
+    """
+
+    st.markdown(f"""
     <div class="train-bg">
         <div class="train-wrapper">
-            <img class="train-img" src="https://i.imgur.com/8QZ7Y9K.png" alt="Train">
+            <div class="train-img">{train_svg}</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -734,6 +884,21 @@ else:
 
     with st.sidebar:
         st.header("🔧 Controls")
+
+        # ===== THEME TOGGLE =====
+        st.markdown("### 🎨 Theme")
+        theme_choice = st.radio(
+            "Select Theme",
+            options=["Light", "Dark"],
+            index=0 if st.session_state.theme == "Light" else 1,
+            horizontal=True,
+            key="theme_radio"
+        )
+        if theme_choice != st.session_state.theme:
+            st.session_state.theme = theme_choice
+            st.rerun()
+
+        st.markdown("---")
         if st.button("🔄 Refresh Data", type="primary", use_container_width=True):
             refresh_data()
 
@@ -850,7 +1015,7 @@ else:
             if not filtered_df.empty and 'STATION' in filtered_df.columns:
                 top15 = filtered_df.groupby('STATION')['FCOUNT'].sum().nlargest(15).reset_index()
                 fig = px.bar(top15, x='STATION', y='FCOUNT', text='FCOUNT', color='FCOUNT', color_continuous_scale='RdYlGn_r')
-                fig.update_layout(height=480, xaxis_tickangle=45, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font_color='#e0e6ed')
+                fig.update_layout(height=480, xaxis_tickangle=45, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font_color='#1e293b' if st.session_state.theme == "Light" else '#e0e6ed')
                 st.plotly_chart(fig, use_container_width=True)
         with col_g2:
             st.markdown('<p class="section-header">Station Summary</p>', unsafe_allow_html=True)
@@ -868,7 +1033,7 @@ else:
                 dept_plot = cat_sum.sort_values('Cases', ascending=True)
                 fig_dept = px.bar(dept_plot, x='Cases', y='DEPARTMENT', orientation='h', text='Cases', color='Cases', color_continuous_scale='Blues')
                 fig_dept.update_traces(textposition='outside', cliponaxis=False)
-                fig_dept.update_layout(height=400, showlegend=False, coloraxis_showscale=False, xaxis_title="Cases", yaxis_title="", margin=dict(t=30, b=30, l=20, r=50), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font_color='#e0e6ed')
+                fig_dept.update_layout(height=400, showlegend=False, coloraxis_showscale=False, xaxis_title="Cases", yaxis_title="", margin=dict(t=30, b=30, l=20, r=50), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font_color='#1e293b' if st.session_state.theme == "Light" else '#e0e6ed')
                 st.plotly_chart(fig_dept, use_container_width=True)
             else:
                 st.info("No Department data")
@@ -878,7 +1043,7 @@ else:
                 err_plot = error_sum.head(12).sort_values('Cases', ascending=True)
                 fig_err = px.bar(err_plot, x='Cases', y='ERROR MAIN CATEGORY', orientation='h', text='Cases', color='Cases', color_continuous_scale='Oranges')
                 fig_err.update_traces(textposition='outside', cliponaxis=False)
-                fig_err.update_layout(height=400, showlegend=False, coloraxis_showscale=False, xaxis_title="Cases", yaxis_title="", margin=dict(t=30, b=30, l=20, r=50), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font_color='#e0e6ed')
+                fig_err.update_layout(height=400, showlegend=False, coloraxis_showscale=False, xaxis_title="Cases", yaxis_title="", margin=dict(t=30, b=30, l=20, r=50), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font_color='#1e293b' if st.session_state.theme == "Light" else '#e0e6ed')
                 st.plotly_chart(fig_err, use_container_width=True)
             else:
                 st.info("No Error data")
@@ -888,7 +1053,7 @@ else:
                 jur_plot = jur_sum.head(12).sort_values('Cases', ascending=True)
                 fig_jur = px.bar(jur_plot, x='Cases', y='JURISDICTION', orientation='h', text='Cases', color='Cases', color_continuous_scale='Teal')
                 fig_jur.update_traces(textposition='outside', cliponaxis=False)
-                fig_jur.update_layout(height=400, showlegend=False, coloraxis_showscale=False, xaxis_title="Cases", yaxis_title="", margin=dict(t=30, b=30, l=20, r=50), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font_color='#e0e6ed')
+                fig_jur.update_layout(height=400, showlegend=False, coloraxis_showscale=False, xaxis_title="Cases", yaxis_title="", margin=dict(t=30, b=30, l=20, r=50), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font_color='#1e293b' if st.session_state.theme == "Light" else '#e0e6ed')
                 st.plotly_chart(fig_jur, use_container_width=True)
             else:
                 st.info("No Jurisdiction data")
@@ -963,7 +1128,7 @@ else:
                     xaxis={'categoryorder': 'array', 'categoryarray': station_order},
                     paper_bgcolor='rgba(0,0,0,0)',
                     plot_bgcolor='rgba(0,0,0,0)',
-                    font_color='#e0e6ed'
+                    font_color='#1e293b' if st.session_state.theme == "Light" else '#e0e6ed'
                 )
 
                 fig_anim.layout.updatemenus[0].buttons[0].args[1]['frame']['duration'] = frame_duration
@@ -1091,10 +1256,10 @@ else:
             lower = [max(0.0, y - m) for y, m in zip(anchor_y, margins)]
 
             fig_fc = go.Figure()
-            fig_fc.add_trace(go.Scatter(x=list(anchor_x) + list(anchor_x)[::-1], y=upper + lower[::-1], fill='toself', fillcolor='rgba(255,153,51,0.18)', line=dict(color='rgba(0,0,0,0)'), hoverinfo='skip', name='95% confidence range'))
-            fig_fc.add_trace(go.Scatter(x=hist.index, y=hist.values, mode='lines+markers', name='Actual', line=dict(color='#003087', width=3), marker=dict(size=8)))
-            fig_fc.add_trace(go.Scatter(x=anchor_x, y=anchor_y, mode='lines+markers+text', name='Forecast', line=dict(color='#FF9933', width=3, dash='dash'), marker=dict(size=10), text=[""] + [f"{int(v):,}" for v in fc.values], textposition='top center'))
-            fig_fc.update_layout(height=470, hovermode='x unified', xaxis_title="Month", yaxis_title=f"Monthly {metric_label}", legend=dict(orientation='h', y=1.12), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font_color='#e0e6ed')
+            fig_fc.add_trace(go.Scatter(x=list(anchor_x) + list(anchor_x)[::-1], y=upper + lower[::-1], fill='toself', fillcolor='rgba(230,126,34,0.18)', line=dict(color='rgba(0,0,0,0)'), hoverinfo='skip', name='95% confidence range'))
+            fig_fc.add_trace(go.Scatter(x=hist.index, y=hist.values, mode='lines+markers', name='Actual', line=dict(color='#0e7490', width=3), marker=dict(size=8)))
+            fig_fc.add_trace(go.Scatter(x=anchor_x, y=anchor_y, mode='lines+markers+text', name='Forecast', line=dict(color='#e67e22', width=3, dash='dash'), marker=dict(size=10), text=[""] + [f"{int(v):,}" for v in fc.values], textposition='top center'))
+            fig_fc.update_layout(height=470, hovermode='x unified', xaxis_title="Month", yaxis_title=f"Monthly {metric_label}", legend=dict(orientation='h', y=1.12), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font_color='#1e293b' if st.session_state.theme == "Light" else '#e0e6ed')
             st.plotly_chart(fig_fc, use_container_width=True, config={'displaylogo': False})
 
             fc_table = pd.DataFrame({
@@ -1122,7 +1287,7 @@ else:
                     plot_df = group_table.sort_values("Forecast total", ascending=True)
                     fig_grp = px.bar(plot_df, x="Forecast total", y=gcol, orientation='h', text="Forecast total", color="Forecast total", color_continuous_scale='RdYlGn_r')
                     fig_grp.update_traces(textposition='outside', cliponaxis=False)
-                    fig_grp.update_layout(height=480, coloraxis_showscale=False, xaxis_title=f"Predicted {metric_label} (next {horizon} months)", yaxis_title="", margin=dict(t=30, b=30, l=20, r=60), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font_color='#e0e6ed')
+                    fig_grp.update_layout(height=480, coloraxis_showscale=False, xaxis_title=f"Predicted {metric_label} (next {horizon} months)", yaxis_title="", margin=dict(t=30, b=30, l=20, r=60), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font_color='#1e293b' if st.session_state.theme == "Light" else '#e0e6ed')
                     st.plotly_chart(fig_grp, use_container_width=True)
 
             st.markdown("---")
